@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Book Haven</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5e8d3 0%, #d9c2a7 100%);
+            min-height: 100vh;
+            color: #3c2f2f;
+            padding: 2rem;
+        }
+
+        .header {
+            background: #3c2f2f;
+            color: #fff4e6;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            margin-bottom: 1rem;
+            color: #3c2f2f;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff4e6;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #d9c2a7;
+        }
+
+        th {
+            background: #6b4e31;
+            color: #fff4e6;
+        }
+
+        tr:hover {
+            background: #f5e8d3;
+        }
+
+        select, input[type="text"], input[type="number"] {
+            padding: 0.5rem;
+            border-radius: 5px;
+            border: 1px solid #d9c2a7;
+            background: #f5e8d3;
+            color: #3c2f2f;
+            width: 100%;
+        }
+
+        button {
+            background: linear-gradient(45deg, #6b4e31, #8d5524);
+            color: #fff4e6;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #8d5524, #6b4e31);
+            transform: scale(1.05);
+        }
+
+        .delete-btn {
+            background: linear-gradient(45deg, #a94442, #d9534f);
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(45deg, #d9534f, #a94442);
+        }
+
+        a {
+            text-decoration: none;
+            background: linear-gradient(45deg, #6b4e31, #8d5524);
+            color: #fff4e6;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        a:hover {
+            background: linear-gradient(45deg, #8d5524, #6b4e31);
+            transform: scale(1.05);
+        }
+
+        .logout {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .success {
+            color: green;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #3c2f2f;
+        }
+
+        .add-product-form, .edit-product-form {
+            background: #fff4e6;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>Trang quản trị - Book Haven</h1>
+    <p>Xin chào, <span th:text="${session.user.username}"></span></p>
+</div>
+
+<div class="container">
+    <div th:if="${param.updated}" class="success">Cập nhật trạng thái đơn hàng thành công!</div>
+    <div th:if="${param.roleUpdated}" class="success">Cập nhật vai trò người dùng thành công!</div>
+    <div th:if="${param.productAdded}" class="success">Thêm sản phẩm mới thành công!</div>
+    <div th:if="${param.productUpdated}" class="success">Cập nhật sản phẩm thành công!</div>
+    <div th:if="${param.productDeleted}" class="success">Xóa sản phẩm thành công!</div>
+
+    <!-- Danh sách đơn hàng -->
+    <h2>Danh sách đơn hàng</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Người đặt</th>
+            <th>Địa chỉ</th>
+            <th>Số điện thoại</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.id}"></td>
+            <td th:text="${order.getUser().getName()}"></td>
+            <td th:text="${order.address}"></td>
+            <td th:text="${order.phone}"></td>
+            <td>
+                <form th:action="@{/admin/update-order}" method="post">
+                    <input type="hidden" name="orderId" th:value="${order.id}">
+                    <select name="status" th:value="${order.status}">
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                    <button type="submit">Cập nhật</button>
+                </form>
+            </td>
+            <td th:text="${order.status}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Danh sách người dùng -->
+    <h2>Danh sách người dùng</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Tên đăng nhập</th>
+            <th>Email</th>
+            <th>Vai trò</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.role}"></td>
+            <td>
+                <form th:action="@{/admin/update-role}" method="post">
+                    <input type="hidden" name="username" th:value="${user.username}">
+                    <select name="role" th:value="${user.role}">
+                        <option value="USER">USER</option>
+                        <option value="ADMIN">ADMIN</option>
+                    </select>
+                    <button type="submit">Cập nhật</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Form thêm sản phẩm mới -->
+    <h2>Thêm sản phẩm mới</h2>
+    <div class="add-product-form">
+        <form th:action="@{/admin/add-product}" method="post">
+            <div class="form-group">
+                <label for="title">Tiêu đề</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="author">Tác giả</label>
+                <input type="text" id="author" name="author" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Giá (VNĐ)</label>
+                <input type="number" id="price" name="price" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="image">URL hình ảnh</label>
+                <input type="text" id="image" name="image" required>
+            </div>
+            <button type="submit">Thêm sản phẩm</button>
+        </form>
+    </div>
+
+    <!-- Danh sách sản phẩm với sửa/xóa -->
+    <h2>Danh sách sản phẩm</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tiêu đề</th>
+            <th>Tác giả</th>
+            <th>Giá (VNĐ)</th>
+            <th>Hình ảnh</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${products}">
+            <td th:text="${product.id}"></td>
+            <td th:text="${product.title}"></td>
+            <td th:text="${product.author}"></td>
+            <td th:text="${#numbers.formatInteger(product.price, 0, 'COMMA')}"></td>
+            <td><img th:src="${product.image}" alt="Product Image" style="width: 50px; height: auto;"></td>
+            <td>
+                <a th:href="@{/admin/edit-product(id=${product.id})}">Sửa</a>
+                <form th:action="@{/admin/delete-product}" method="post" style="display: inline;">
+                    <input type="hidden" name="productId" th:value="${product.id}">
+                    <button type="submit" class="delete-btn" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');">Xóa</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Form sửa sản phẩm (nếu có param editProductId) -->
+    <div th:if="${editProduct}" class="edit-product-form">
+        <h2>Chỉnh sửa sản phẩm</h2>
+        <form th:action="@{/admin/update-product}" method="post">
+            <input type="hidden" name="id" th:value="${editProduct.id}">
+            <div class="form-group">
+                <label for="editTitle">Tiêu đề</label>
+                <input type="text" id="editTitle" name="title" th:value="${editProduct.title}" required>
+            </div>
+            <div class="form-group">
+                <label for="editAuthor">Tác giả</label>
+                <input type="text" id="editAuthor" name="author" th:value="${editProduct.author}" required>
+            </div>
+            <div class="form-group">
+                <label for="editPrice">Giá (VNĐ)</label>
+                <input type="number" id="editPrice" name="price" th:value="${editProduct.price}" min="0" required>
+            </div>
+            <div class="form-group">
+                <label for="editImage">URL hình ảnh</label>
+                <input type="text" id="editImage" name="image" th:value="${editProduct.image}" required>
+            </div>
+            <button type="submit">Cập nhật sản phẩm</button>
+            <a th:href="@{/admin}" style="background: #a94442; margin-left: 1rem;">Hủy</a>
+        </form>
+    </div>
+
+    <div class="logout">
+        <a th:href="@{/logout}">Đăng xuất</a>
+    </div>
+</div>
+</body>
+</html>

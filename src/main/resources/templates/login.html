@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập & Đăng ký - Book Haven</title>
+    <style>
+        /* Giữ nguyên toàn bộ CSS của bạn */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5e8d3 0%, #d9c2a7 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #3c2f2f;
+        }
+
+        .auth-container {
+            background: #fff4e6;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            width: 200%;
+            transition: transform 0.5s ease;
+        }
+
+        .auth-form {
+            width: 50%;
+            padding: 0 3rem;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-header h1 {
+            font-size: 2rem;
+            color: #3c2f2f;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-header p {
+            color: #6b4e31;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #3c2f2f;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #d9c2a7;
+            border-radius: 25px;
+            background: #f5e8d3;
+            color: #3c2f2f;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #8d5524;
+        }
+
+        .form-group input::placeholder {
+            color: #6b4e31;
+            opacity: 0.7;
+        }
+
+        .auth-btn {
+            background: linear-gradient(45deg, #6b4e31, #8d5524);
+            color: #fff4e6;
+            border: none;
+            padding: 0.8rem;
+            width: 100%;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .auth-btn:hover {
+            background: linear-gradient(45deg, #8d5524, #6b4e31);
+            transform: scale(1.02);
+        }
+
+        .switch-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .switch-link a {
+            color: #a66338;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .switch-link a:hover {
+            text-decoration: underline;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .forgot-password a {
+            color: #a66338;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        #authWrapper.login {
+            transform: translateX(0);
+        }
+
+        #authWrapper.register {
+            transform: translateX(-50%);
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .success {
+            color: green;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .footer {
+            background: #fff4e6;
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid #d9c2a7;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            color: #3c2f2f;
+        }
+
+        .footer p {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: #a66338;
+            text-decoration: none;
+            margin: 0 0.5rem;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #8d5524;
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+<div class="auth-container">
+    <div class="auth-wrapper" id="authWrapper" th:classappend="${param.register != null} ? 'register' : 'login'">
+        <!-- Form Đăng nhập -->
+        <div class="auth-form">
+            <div class="auth-header">
+                <h1>Đăng nhập</h1>
+                <p>Chào mừng bạn đến với Book Haven</p>
+            </div>
+
+            <form th:action="@{/login}" method="post" id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Tên đăng nhập</label>
+                    <input type="text" id="loginUsername" name="username" placeholder="Nhập tên đăng nhập" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Mật khẩu</label>
+                    <input type="password" id="loginPassword" name="password" placeholder="Nhập mật khẩu" required>
+                </div>
+
+                <div th:if="${error}" class="error" th:text="${error}"></div>
+                <div th:if="${param.success}" class="success">Đăng ký thành công! Vui lòng đăng nhập.</div>
+
+                <button type="submit" class="auth-btn">Đăng nhập</button>
+            </form>
+
+            <div class="forgot-password">
+                <a href="#">Quên mật khẩu?</a>
+            </div>
+
+            <div class="switch-link">
+                Chưa có tài khoản? <a id="toRegister">Đăng ký ngay</a>
+            </div>
+        </div>
+
+        <!-- Form Đăng ký -->
+        <div class="auth-form">
+            <div class="auth-header">
+                <h1>Đăng ký</h1>
+                <p>Tham gia Book Haven ngay hôm nay</p>
+            </div>
+
+            <form th:action="@{/register}" method="post" id="registerForm">
+                <div class="form-group">
+                    <label for="registerUsername">Tên đăng nhập</label>
+                    <input type="text" id="registerUsername" name="username" placeholder="Nhập tên đăng nhập" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" name="email" placeholder="Nhập email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerName">Họ và Tên</label>
+                    <input type="text" id="registerName" name="Name" placeholder="Nhập họ và tên" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerPassword">Mật khẩu</label>
+                    <input type="password" id="registerPassword" name="password" placeholder="Nhập mật khẩu" required>
+                </div>
+
+
+
+                <div class="form-group">
+                    <label for="confirmPassword">Xác nhận mật khẩu</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Xác nhận mật khẩu" required>
+                </div>
+
+                <div th:if="${error}" class="error" th:text="${error}"></div>
+
+                <button type="submit" class="auth-btn">Đăng ký</button>
+            </form>
+
+            <div class="switch-link">
+                Đã có tài khoản? <a id="toLogin">Đăng nhập</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const authWrapper = document.getElementById('authWrapper');
+    const toRegister = document.getElementById('toRegister');
+    const toLogin = document.getElementById('toLogin');
+
+    toRegister.addEventListener('click', () => {
+        authWrapper.classList.remove('login');
+        authWrapper.classList.add('register');
+    });
+
+    toLogin.addEventListener('click', () => {
+        authWrapper.classList.remove('register');
+        authWrapper.classList.add('login');
+    });
+</script>
+</body>
+</html>
